@@ -1,6 +1,5 @@
 group 'com.mr.flutter.plugin.pdfpreview.pdfpreviewer'
 version '1.0-SNAPSHOT'
-
 buildscript {
     repositories {
         google()
@@ -11,24 +10,25 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.1.2'
     }
 }
-
 rootProject.allprojects {
     repositories {
         google()
         jcenter()
     }
 }
-
 apply plugin: 'com.android.library'
-
 android {
     compileSdkVersion 27
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 21
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         disable 'InvalidPackage'
     }
+}
+
+dependencies {
+    compileOnly files('tmplibs/flutter.jar')
 }
