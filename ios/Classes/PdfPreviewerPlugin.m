@@ -14,10 +14,14 @@
       
       size_t pageNumber = (size_t)[call.arguments[@"pageNumber"] intValue];
       NSString * filePath = call.arguments[@"filePath"];
-      BOOL isOnLastPage = (BOOL)[call.arguments[@"isOnLastPage"] boolValue];
       
-      result([self getPDFPreview:filePath ofPage:pageNumber isTheLastPage:isOnLastPage]);
-  } else {
+      
+      result([self getPDFPreview:filePath ofPage:pageNumber isTheLastPage: NO]);
+  } else if([@"getLastPagePreview" isEqualToString:call.method]){
+     NSString * filePath = call.arguments[@"filePath"];
+      
+     result([self getPDFPreview:filePath ofPage:0 isTheLastPage: YES]);
+  }else {
     result(FlutterMethodNotImplemented);
   }
 }
