@@ -1,8 +1,8 @@
 name: pdf_previewer
-description: A new flutter plugin project.
+description: Provides a way to generate previews of selected pages in a PDF file from a provided path. 
 version: 0.0.1
-author:
-homepage:
+author: Miguel Ruivo <miguelpruivo@outlook.com>
+homepage: https://github.com/miguelpruivo/flutter_pdf_previewer
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
