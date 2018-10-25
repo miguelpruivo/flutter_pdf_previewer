@@ -8,7 +8,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -17,15 +17,19 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** PdfPreviewerPlugin */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class PdfPreviewerPlugin implements MethodCallHandler {
 
 
+  private final String TAG = "PDFPreviewer";
+  private final String PATH = "/PDFPreviewer";
   private static Registrar instance;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "pdf_previewer");
     instance = registrar;
+    clearTempFiles(new File(Environment.getExternalStorageDirectory().toString() + "/PDFPreviewer"));
     channel.setMethodCallHandler(new PdfPreviewerPlugin());
   }
 
@@ -35,19 +39,21 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
     Thread thread = new Thread(new Runnable() {
       @Override
       public void run() {
-        if (call.method.equals("getPagePreview")) {
-          result.success(getPagePreview((String)call.argument("filePath"), (int)call.argument("pageNumber"), false));
-        } else if(call.method.equals("getLastPagePreview")){
-          result.success(getPagePreview((String)call.argument("filePath"), 0, true));
-        }
-        else{
-          result.notImplemented();
+        switch (call.method) {
+          case "getPagePreview":
+            result.success(getPagePreview((String) call.argument("filePath"), (int) call.argument("pageNumber"), false));
+            break;
+          case "getLastPagePreview":
+            result.success(getPagePreview((String) call.argument("filePath"), 0, true));
+            break;
+          default:
+            result.notImplemented();
+            break;
         }
       }
     });
 
     thread.start();
-    
 
   }
 
@@ -79,7 +85,6 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
         try {
           return createTempPreview(bitmap);
         }finally {
-
           // close the page
           page.close();
           // close the renderer
@@ -92,17 +97,25 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
     return null;
   }
 
+  private static void clearTempFiles(File fileOrDir){
+      if (fileOrDir.isDirectory())
+          for (File child : fileOrDir.listFiles())
+              clearTempFiles(child);
+
+      fileOrDir.delete();
+  }
+
   private String createTempPreview(Bitmap bmp){
 
     String root = Environment.getExternalStorageDirectory().toString();
-    File myDir = new File(root + "/req_images");
-    myDir.mkdirs();
-    Random generator = new Random();
-    int n = 10000;
-    n = generator.nextInt(n);
-    String fname = "Image-" + n + ".png";
-    File file = new File(myDir, fname);
-    Log.i("PDFPreviewer", "" + file);
+    File tmpFiles = new File(root + PATH);
+    tmpFiles.mkdirs();
+
+    String timeStamp = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+    String fileName = "PDFPreviewPage-" + timeStamp + ".png";
+    File file = new File(tmpFiles, fileName);
+    Log.i(TAG, "" + file);
+
     if (file.exists())
       file.delete();
     try {
