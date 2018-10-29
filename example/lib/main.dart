@@ -81,6 +81,7 @@ class _MyAppState extends State<MyApp> {
                     width: 50.0,
                     child: new TextField(
                       decoration: InputDecoration(hintText: 'Page...'),
+                      textAlign: TextAlign.center,
                       onSubmitted: (value) => _pageNumber = int.parse(value),
                       keyboardType: TextInputType.number,
                     ),
