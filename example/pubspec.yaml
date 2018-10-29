@@ -26,6 +26,7 @@ dev_dependencies:
 
   pdf_previewer:
     path: ../
+  file_picker: "^0.1.3"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

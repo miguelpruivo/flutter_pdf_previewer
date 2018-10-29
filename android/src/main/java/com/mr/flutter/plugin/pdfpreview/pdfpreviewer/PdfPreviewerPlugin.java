@@ -68,9 +68,11 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
       Bitmap bitmap;
       final int pageCount = renderer.getPageCount();
 
-      if(isLast){
+      if(isLast) {
         pageNumber = pageCount-1;
-      }else{
+      }else if(pageNumber > pageCount) {
+        pageNumber = 0;
+      }else {
         pageNumber--;
       }
 
@@ -98,7 +100,7 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
   }
 
   private static void clearTempFiles(File fileOrDir){
-      if (fileOrDir.isDirectory())
+      if (fileOrDir.isDirectory() && fileOrDir.listFiles() != null)
           for (File child : fileOrDir.listFiles())
               clearTempFiles(child);
 
