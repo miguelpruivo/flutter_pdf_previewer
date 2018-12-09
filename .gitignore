@@ -1,8 +1,13 @@
 .DS_Store
-.dart_tool/
-
+.atom/
+.idea
 .packages
+.dart_tool/
 .pub/
-pubspec.lock
-
 build/
+ios/.generated/
+packages
+pubspec.lock
+.iml
+Podfile.lock
+pdf_previewer.iml
