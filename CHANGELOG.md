@@ -1,3 +1,3 @@
-## 0.0.1
+## 0.1.0
 
-* TODO: Describe initial release.
+* **Initial release**: Create a PDF preview for the specified page as a PNG file (temporary cached).
