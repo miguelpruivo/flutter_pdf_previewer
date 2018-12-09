@@ -7,7 +7,7 @@ PDF Previewer plugin alows you to generate PNG's of specified pages from a provi
 First, add  *pdf_previewer*  as a dependency in [your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ```
-file_picker: ^0.1.0
+pdf_previewer: ^0.1.0
 ```
 ## Android
 Add `<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />` to your app `AndroidManifest.xml` file.
