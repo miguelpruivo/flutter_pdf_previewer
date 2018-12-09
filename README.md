@@ -16,7 +16,7 @@ Add `<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /
 No permissions required.
 
 ## Demo App
-![Demo](https://github.com/miguelpruivo/pdf_previewer/blob/master/example/demo.png)
+![Demo](https://github.com/miguelpruivo/flutter_pdf_previewer/blob/master/example/demo.png)
 
 ## Example
 Check the example app.
