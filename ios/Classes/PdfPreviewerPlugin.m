@@ -17,36 +17,45 @@ static NSString* const kFilePath = @"file:///";
 
 + (void)clearCache{
     
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *filePathAndDirectory = [documentsDirectory stringByAppendingPathComponent:kDirectory];
-    NSError *error;
-    
-    if (![[NSFileManager defaultManager] removeItemAtPath:filePathAndDirectory error:&error]){
-        NSLog(@"Remove directory error: %@", error);
-    }else{
-        NSLog(@"Cache removed with success.");
-    }
-    
+     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+         
+         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+         NSString *documentsDirectory = [paths objectAtIndex:0];
+         NSString *filePathAndDirectory = [documentsDirectory stringByAppendingPathComponent:kDirectory];
+         NSError *error;
+         
+         BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:filePathAndDirectory];
+         
+         if (fileExists && ![[NSFileManager defaultManager] removeItemAtPath:filePathAndDirectory error:&error]){
+             NSLog(@"PDFPreviewer: Error while removing the cache: %@", error);
+         }else{
+             NSLog(@"PDFPreviewer: Cache removed with success.");
+         }
+     });
 }
     
     
 
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"getPagePreview" isEqualToString:call.method]) {
-      
-      size_t pageNumber = (size_t)[call.arguments[@"pageNumber"] intValue];
-      NSString * filePath = call.arguments[@"filePath"];
-      
-      result([self getPDFPreview:filePath ofPage:pageNumber isTheLastPage: NO]);
-  } else if([@"getLastPagePreview" isEqualToString:call.method]){
-     NSString * filePath = call.arguments[@"filePath"];
-      
-     result([self getPDFPreview:filePath ofPage:0 isTheLastPage: YES]);
-  }else {
-    result(FlutterMethodNotImplemented);
-  }
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        if ([@"getPagePreview" isEqualToString:call.method]) {
+            
+            size_t pageNumber = (size_t)[call.arguments[@"pageNumber"] intValue];
+            NSString * filePath = call.arguments[@"filePath"];
+            
+            result([self getPDFPreview:filePath ofPage:pageNumber isTheLastPage: NO]);
+        } else if([@"getLastPagePreview" isEqualToString:call.method]){
+            NSString * filePath = call.arguments[@"filePath"];
+            
+            result([self getPDFPreview:filePath ofPage:0 isTheLastPage: YES]);
+        }else {
+            result(FlutterMethodNotImplemented);
+        }
+        
+    });
 }
 
 
@@ -87,9 +96,9 @@ static NSString* const kFilePath = @"file:///";
     // CoreGraphics: MUST retain the Page-Refernce manually
     CGPDFPageRetain(SourcePDFPage);
     NSString *relativeOutputFilePath = [NSString stringWithFormat:@"%@/%@%d.png", kDirectory, kOutputBaseName, (int)pageNumber];
-    NSString *ImageFileName = [documentsDirectory stringByAppendingPathComponent:relativeOutputFilePath];
+    NSString *imageFilePath = [documentsDirectory stringByAppendingPathComponent:relativeOutputFilePath];
     CGRect sourceRect = CGPDFPageGetBoxRect(SourcePDFPage, kCGPDFMediaBox);
-    UIGraphicsBeginPDFContextToFile(ImageFileName, sourceRect, nil);
+    UIGraphicsBeginPDFContextToFile(imageFilePath, sourceRect, nil);
     UIGraphicsBeginImageContext(CGSizeMake(sourceRect.size.width,sourceRect.size.height));
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
     CGContextTranslateCTM(currentContext, 0.0, sourceRect.size.height); //596,842 //640×960,
@@ -97,10 +106,10 @@ static NSString* const kFilePath = @"file:///";
     CGContextDrawPDFPage (currentContext, SourcePDFPage); // draws the page in the graphics context
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    NSString *imagePath = [documentsDirectory stringByAppendingPathComponent: relativeOutputFilePath];
-    [UIImagePNGRepresentation(image) writeToFile: imagePath atomically:YES];
     
-    return imagePath;
+    [UIImagePNGRepresentation(image) writeToFile: imageFilePath atomically:YES];
+    
+    return imageFilePath;
     
     
 }
