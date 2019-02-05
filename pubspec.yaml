@@ -1,6 +1,6 @@
 name: pdf_previewer
 description: Provides a way to generate previews of selected pages in a PDF file from a provided path. 
-version: 0.1.0
+version: 0.1.1
 author: Miguel Ruivo <miguelpruivo@outlook.com>
 homepage: https://github.com/miguelpruivo/flutter_pdf_previewer
 
