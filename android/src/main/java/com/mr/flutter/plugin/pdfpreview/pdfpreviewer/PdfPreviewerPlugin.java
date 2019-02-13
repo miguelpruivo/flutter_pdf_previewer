@@ -78,9 +78,14 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
 
         PdfRenderer.Page page = renderer.openPage(pageNumber);
 
-        int width = instance.activity().getResources().getDisplayMetrics().densityDpi / 72 * page.getWidth();
-        int height = instance.activity().getResources().getDisplayMetrics().densityDpi / 72 * page.getHeight();
-        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        double width = instance.activity().getResources().getDisplayMetrics().densityDpi  * page.getWidth();
+        double height = instance.activity().getResources().getDisplayMetrics().densityDpi  * page.getHeight();
+        final double docRatio = width / height;
+
+        width = 2048;
+        height = (int)(width / docRatio);
+
+        bitmap = Bitmap.createBitmap((int)width, (int)height, Bitmap.Config.ARGB_8888);
 
         page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
 
@@ -118,8 +123,10 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
     File file = new File(tmpFiles, fileName);
     Log.i(TAG, "" + file);
 
-    if (file.exists())
+    if (file.exists()) {
       file.delete();
+    }
+
     try {
       FileOutputStream out = new FileOutputStream(file);
       bmp.compress(Bitmap.CompressFormat.PNG, 100, out);

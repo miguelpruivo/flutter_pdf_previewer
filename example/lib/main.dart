@@ -87,7 +87,7 @@ class _MyAppState extends State<MyApp> {
                     child: Text('Pick PDF'),
                     onPressed: _pickPDF,
                   ),
-                  Text('File: ' + _pdfPath.split('/').last),
+                  new Text('File: ' + _pdfPath.split('/').last),
                 ],
               ),
             ),
