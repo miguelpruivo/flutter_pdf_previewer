@@ -33,6 +33,19 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
     channel.setMethodCallHandler(new PdfPreviewerPlugin());
   }
 
+  private void runOnUiThread(final Result result, final Object o, final boolean success){
+    instance.activity().runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        if(success) {
+          result.success(o);
+        } else {
+          result.notImplemented();
+        }
+      }
+    });
+  }
+
   @Override
   public void onMethodCall(final MethodCall call, final Result result) {
 
@@ -41,13 +54,13 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
       public void run() {
         switch (call.method) {
           case "getPagePreview":
-            result.success(getPagePreview((String) call.argument("filePath"), (int) call.argument("pageNumber"), false));
+            runOnUiThread(result, getPagePreview((String) call.argument("filePath"), (int) call.argument("pageNumber"), false), true);
             break;
           case "getLastPagePreview":
-            result.success(getPagePreview((String) call.argument("filePath"), 0, true));
+            runOnUiThread(result, getPagePreview((String) call.argument("filePath"), 0, true),true);
             break;
           default:
-            result.notImplemented();
+            runOnUiThread(result, null, false);
             break;
         }
       }
