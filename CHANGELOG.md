@@ -1,3 +1,9 @@
+## 0.1.3
+
+* Moves plugin calls to the UIThread on Android.
+* Updates the target SDK on Android to 28.
+* Updates example app.
+
 ## 0.1.2+2
 
 * Removes unnecessary dependency from `build.gradle`.
