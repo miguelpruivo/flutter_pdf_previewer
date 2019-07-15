@@ -28,7 +28,3 @@ android {
         disable 'InvalidPackage'
     }
 }
-
-dependencies {
-    implementation files('tmplibs/flutter.jar')
-}
