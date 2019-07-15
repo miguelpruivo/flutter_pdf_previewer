@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
 
   void _pickPDF() async {
     try {
-      _pdfPath = await FilePicker.getFilePath(type: FileType.PDF);
+      _pdfPath = await FilePicker.getFilePath(type: FileType.CUSTOM, fileExtension: 'pdf');
       setState(() {});
       if (_pdfPath == '') {
         return;
@@ -107,8 +107,7 @@ class TemplatePageWidget extends StatefulWidget {
   final bool isLoading;
   final String previewPath;
 
-  TemplatePageWidget({@required this.width, @required this.height, this.isLoading, this.previewPath})
-      : assert(width > 0.0 && height > 0.0);
+  TemplatePageWidget({@required this.width, @required this.height, this.isLoading, this.previewPath}) : assert(width > 0.0 && height > 0.0);
   TemplatePageState createState() => new TemplatePageState();
 }
 
@@ -175,10 +174,10 @@ class _PdfPagePreviewState extends State<PdfPagePreview> {
       imgReady = false;
       provider = FileImage(File(widget.imgPath));
       final resolver = provider.resolve(createLocalImageConfiguration(context));
-      resolver.addListener((imgInfo, alreadyPainted) {
+      resolver.addListener(ImageStreamListener((imgInfo, alreadyPainted) {
         imgReady = true;
         if (!alreadyPainted) setState(() {});
-      });
+      }));
     }
   }
 
