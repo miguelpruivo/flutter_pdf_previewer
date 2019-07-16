@@ -22,14 +22,13 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
 
 
   private final String TAG = "PDFPreviewer";
-  private final String PATH = "/PDFPreviewer";
   private static Registrar instance;
 
   /** Plugin registration. */
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "pdf_previewer");
     instance = registrar;
-    clearTempFiles(new File(Environment.getExternalStorageDirectory().toString() + "/PDFPreviewer"));
+    clearTempFiles(instance.activeContext().getCacheDir());
     channel.setMethodCallHandler(new PdfPreviewerPlugin());
   }
 
@@ -117,18 +116,22 @@ public class PdfPreviewerPlugin implements MethodCallHandler {
     return null;
   }
 
-  private static void clearTempFiles(File fileOrDir){
-      if (fileOrDir.isDirectory() && fileOrDir.listFiles() != null)
-          for (File child : fileOrDir.listFiles())
-              clearTempFiles(child);
-
-      fileOrDir.delete();
+  private static boolean clearTempFiles(File fileOrDir){
+    if (fileOrDir != null && fileOrDir.isDirectory()) {
+      String[] children = fileOrDir.list();
+      for (int i = 0; i < children.length; i++) {
+        boolean success = clearTempFiles(new File(fileOrDir, children[i]));
+        if (!success) {
+          return false;
+        }
+      }
+    }
+    // The directory is now empty so delete it
+    return fileOrDir.delete();
   }
 
   private String createTempPreview(Bitmap bmp){
-
-    String root = Environment.getExternalStorageDirectory().toString();
-    File tmpFiles = new File(root + PATH);
+    File tmpFiles = new File(instance.activeContext().getCacheDir(), TAG);
     tmpFiles.mkdirs();
 
     String timeStamp = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
